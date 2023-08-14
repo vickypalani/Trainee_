@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "session-project"
+version = "0.1.0"
+description = ""
+authors = ["Palaniyappan Ramanathan <palaniyappan@mallow-tech.com>"]
+readme = "README.md"
+packages = [{include = "session_project"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^4.2.4"
+django-ajax-datatable = "^4.4.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,135 @@
+{% extends 'base_layouts/index.html' %}
+{% load static %}
+{% block title %}TODO{% endblock %}
+{% block footer %}{% endblock %}
+{% block page-title %}Todo-List{% endblock %}
+{% block bread-crumbs %}{% endblock %}
+{% block left_side %}
+<table id="todo_table" width="100%" class="table table-striped"></table>
+{% endblock %}
+{% block right_side %}
+<div class="card">
+    <div class="card-body pb-10">
+        <h5 class="card-title text-center">Create &amp; Update tasks </h5>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="record_id" id="record" value="" />
+            {% for field in form %}
+                <fieldset class="row mb-3">
+                    <label class="col-sm-6 col-form-label position-relative">
+                        {{ field.label_tag }}
+                    </label>
+                    <div class="col-sm-6">
+                        <div class="input-group has-validation">
+                            {{ field }}
+                        </div>
+                    </div>
+                    {{ field.errors }}
+                </fieldset>
+            {% endfor %}
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="reset" id="reset_button" class="btn btn-secondary">Reset</button>
+            </div>
+        </form>
+    
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    $(document).ready(function() {
+        $("form").on('submit', function(e) {
+            e.preventDefault();
+            var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+            var status = $("input[name='is_completed']:checked").val();
+            if (status == "on"){
+                status = "True";
+            }
+            else{
+                status = "False";
+            }
+            $.ajax({
+                type: "POST",
+                url: "{% url 'todo_list' %}",
+                data: {
+                    csrfmiddlewaretoken: csrfToken,
+                    task_name: $("#id_task_name").val(),
+                    priority_level: $("input[name='priority_level']:checked").val(),
+                    record: $("#record").val(),
+                },
+                success: function(data) {
+                    $('#todo_table').DataTable().ajax.reload();
+                    $("#record").val("");
+                    $("#reset_button").trigger('click');
+                },
+                error: function(data) {
+                    for (field in JSON.parse(data.responseJSON.field_errors)) {
+                        $('#id_' + field).append('<span id="reason_error" class="form_errors text-danger">' + JSON.parse(data.responseJSON.field_errors)[field][0].message + '</span>');
+                    }
+                }
+            })
+        });
+        $("#reset_button").click(function(){
+            $(".form_errors").text("");
+        });
+    });
+    $(document).ready(function () {
+        AjaxDatatableViewUtils.initialize_table(
+            $('#todo_table'),
+            "{% url 'todo_datatable' %}",
+            {
+                serverSide: true,
+                processing: false,
+                autoWidth: true,
+                scrollX: true,
+                dom: '<"top-left"l><"top-right"f>t<"bottom-left"i><"bottom-right"p>'
+            },
+        );
+    });
+    $.ajaxSetup({
+        headers: { 'X-CSRFToken': $("[name=csrfmiddlewaretoken]").val() },
+    });
+    function complete(url){
+        $.ajax({
+            type: "POST",
+            url: url,
+            success: function(){
+                $('#todo_table').DataTable().ajax.reload();
+            },
+            error: function(){
+                alert("Something went wrong, Try again later");
+            }
+        })
+    };
+    function commonDelete(url) {
+        $.ajax({
+            type: "DELETE",
+            url: url,
+            success: function () {
+                $('#todo_table').DataTable().ajax.reload();
+            },
+            error: function () {
+                alert("Something went wrong, Try again later");
+            }
+        })
+    };
+
+    function commonEdit(url) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                success: function (data) {
+                    console.log(data);
+                    $("#reset_button").trigger("click");
+                    $("#id_task_name").val(data.task_name);
+                    $("input[name='priority_level'][value='" + data.priority_level + "']").prop("checked", true);
+                    $("#record").val(data.id);
+                },
+                error: function () {
+                    alert("Something went wrong, Try again later");
+                }
+            })
+        };
+</script>
+{% endblock %}
