@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm
 from django import forms
 from .models import CustomUser
 
@@ -51,7 +51,18 @@ class LoginForm(AuthenticationForm):
             }
         )
     )
-    
     class Meta:
         model = CustomUser
         fields = ["username", "password"]
+
+class UserRole(forms.ModelForm):
+    email = forms.ModelChoiceField(label="Email", 
+        queryset=CustomUser.objects.all())
+    class Meta:
+        model = CustomUser
+        fields = ["role"]
+
+        widgets = {
+            "email": forms.Select(attrs={"class": "form-control"}),
+            "role": forms.Select(attrs={"class": "form-control"}),
+        }

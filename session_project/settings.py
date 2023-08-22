@@ -108,7 +108,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "custom_auth.CustomUser"
 
-LOGIN_REDIRECT_URL = "session_app:dashboard"
+LOGIN_REDIRECT_URL = "todo:todo_list"
+
+LOGIN_URL = "custom_auth:login"
 
 LOGOUT_REDIRECT_URL = "custom_auth:login"
 
@@ -137,3 +139,15 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+import environ
+
+env = environ.Env()
+env.read_env(os.path.join(BASE_DIR, ".env"))
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = env("EMAIL_PORT")

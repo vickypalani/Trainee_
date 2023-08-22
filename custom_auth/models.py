@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractUser
+from core import constants
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
@@ -27,7 +28,9 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser):
+    username = None
     email = models.EmailField(max_length=255, unique=True)
+    role = models.CharField(max_length=255, choices=constants.ROLE_CHOICES, default=constants.ROLE_TRAINEE)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

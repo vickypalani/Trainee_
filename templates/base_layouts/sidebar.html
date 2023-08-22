@@ -2,11 +2,19 @@
 
     <ul class="sidebar-nav" id="sidebar-nav">
         <li class="nav-item">
-            <a class="nav-link " href="index.html">
+            <a class="nav-link " href="{% url 'todo:todo_list' %}">
                 <i class="bi bi-grid"></i>
                 <span>Todo</span>
             </a>
         </li>
+        {% if perms.custom_auth.view_customuser %}
+        <li class="nav-item">
+            <a class="nav-link " href="{% url 'custom_auth:add_roles_permissions' %}">
+                <i class="bi bi-people"></i>
+                <span>Users</span>
+            </a>
+        </li>
+        {% endif %}
 
         {% comment %}
         <li class="nav-item">

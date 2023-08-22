@@ -10,6 +10,7 @@ packages = [{include = "session_project"}]
 python = "^3.11"
 django = "^4.2.4"
 django-ajax-datatable = "^4.4.5"
+django-environ = "^0.10.0"
 
 
 [build-system]
